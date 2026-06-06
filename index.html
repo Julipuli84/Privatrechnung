@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GOÄ Liquidation">
+<meta name="theme-color" content="#0f2d52">
+<title>Liquidation – KV Berlin</title>
+
+<!-- PWA Manifest inline -->
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22GO%C3%84%20Liquidation%20KV%20Berlin%22%2C%22short_name%22%3A%22Liquidation%22%2C%22description%22%3A%22%C3%84rztlicher%20Bereitschaftsdienst%20KV%20Berlin%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4f6fb%22%2C%22theme_color%22%3A%22%230f2d52%22%2C%22orientation%22%3A%22portrait%22%7D">
+
+<!-- Apple Touch Icon (inline SVG→canvas) -->
+<link rel="apple-touch-icon" id="appIcon">
+
+<!-- Google Fonts with display=swap for offline fallback -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0f2d52;
+    --navy-mid: #1a4272;
+    --navy-light: #e8eef7;
+    --accent: #c8102e;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --line: #d1d9e6;
+    --bg: #f4f6fb;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { height: 100%; }
+  body { min-height: 100%; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 0 calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ── STICKY HEADER ── */
+  .header-bar {
+    background: var(--navy);
+    color: #fff;
+    padding: 16px 20px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-bar h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; }
+  .header-bar .subtitle { font-size: 10px; opacity: 0.7; font-weight: 300; margin-top: 2px; }
+  .goae-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap;
+  }
+
+  /* ── PATIENT META ── */
+  .meta-strip {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .meta-strip .field-full { grid-column: 1 / -1; }
+  .field-group label {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .field-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    padding: 2px 0 5px;
+    outline: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+  }
+  .field-group input:focus { border-bottom-color: var(--navy); }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: var(--text) !important;
+    background-color: #ffffff !important;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 20px 6px;
+    background: #fff;
+  }
+
+  /* ── POSITIONS TABLE ── */
+  table.pos-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+  table.pos-table thead tr { background: var(--navy); color: #fff; }
+  table.pos-table thead th {
+    padding: 8px 8px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-align: left;
+  }
+  table.pos-table thead th:nth-child(4),
+  table.pos-table thead th:nth-child(5) { text-align: right; }
+
+  table.pos-table tbody tr {
+    border-bottom: 1px solid var(--line);
+    transition: background 0.1s;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  table.pos-table tbody tr:active { background: var(--navy-light) !important; }
+  table.pos-table tbody tr.checked { background: #e6f0ff; }
+  table.pos-table tbody tr.checked td.pos-num { font-weight: 600; color: var(--navy); }
+  table.pos-table tbody tr.checked td.amount { font-weight: 700; color: var(--navy); }
+
+  table.pos-table tbody td {
+    padding: 10px 8px;
+    font-size: 12px;
+    vertical-align: middle;
+  }
+  td.check-col { width: 32px; text-align: center; }
+  td.pos-num   { width: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--navy-mid); font-weight: 500; }
+  td.desc      { font-size: 11.5px; line-height: 1.35; }
+  td.factor    { width: 82px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+  td.amount    { width: 88px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+
+  .cb-box {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  tr.checked .cb-box { background: var(--navy); border-color: var(--navy); }
+  .cb-box svg { display: none; }
+  tr.checked .cb-box svg { display: block; }
+
+  /* ── FREIFELD-ZEILE ── */
+  tr.custom-row { cursor: default !important; }
+  tr.custom-row:active { background: #fff !important; }
+  tr.custom-row.has-value { background: #e6f0ff; }
+  tr.custom-row.has-value td.amount { font-weight: 700; color: var(--navy); }
+  .custom-desc-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 11.5px;
+    color: var(--text);
+    padding: 2px 0 3px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .custom-desc-input:focus { border-bottom-color: var(--navy); }
+  .custom-factor-select {
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    outline: none;
+    width: 100%;
+    text-align: right;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    padding: 2px 0 3px;
+  }
+  .custom-factor-select:focus { border-bottom-color: var(--navy); }
+  .custom-amount-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    padding: 2px 0 3px;
+    outline: none;
+    text-align: right;
+    -webkit-appearance: none;
+  }
+  .custom-amount-input:focus { border-bottom-color: var(--navy); }
+  @media print {
+    tr.custom-row:not(.has-value) { display: none; }
+    .custom-desc-input, .custom-factor-select, .custom-amount-input {
+      border-bottom: none !important;
+    }
+  }
+
+  tr.group-head td {
+    background: var(--navy-light);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+    padding: 5px 8px 4px 42px;
+    cursor: default;
+    position: relative;
+    border-bottom: none;
+  }
+  tr.group-head:active { background: var(--navy-light) !important; }
+
+  /* ── STICKY TOTAL BAR ── */
+  .summary-bar {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
+    bottom: var(--safe-bottom);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    z-index: 100;
+  }
+  .sum-left { display: flex; flex-direction: column; gap: 1px; }
+  .sum-label { font-size: 10px; opacity: 0.7; letter-spacing: 0.05em; }
+  .sum-count { font-size: 11px; opacity: 0.55; font-family: 'IBM Plex Mono', monospace; }
+  .sum-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── PAYMENT ── */
+  .payment-section {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+  }
+  .payment-section h3 {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .pay-options { display: flex; flex-direction: column; gap: 10px; }
+  .pay-option {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+  }
+  .pay-option input[type="radio"] {
+    width: 18px; height: 18px;
+    accent-color: var(--navy);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .pay-option label { font-size: 13px; cursor: pointer; }
+  .iban-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding-left: 28px;
+    margin-top: -4px;
+  }
+  .iban-fixed {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    letter-spacing: 0.04em;
+    background: var(--navy-light);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .iban-toggle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: transparent;
+    border: 1.5px solid var(--navy);
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  /* ── DOCTOR + SIGNATURE ── */
+  .doctor-sig-section {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .doctor-stamp {
+    border-left: 3px solid var(--navy);
+    padding-left: 12px;
+  }
+  .stamp-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 5px;
+    display: block;
+  }
+  .stamp-name { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .stamp-detail { font-size: 11.5px; color: var(--muted); margin-bottom: 1px; }
+
+  .sig-area { display: flex; flex-direction: column; }
+  .sig-date-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .sig-date-value {
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--navy);
+    font-weight: 500;
+    border-bottom: 1.5px solid var(--line);
+    padding: 2px 4px 4px;
+    min-width: 100px;
+    display: inline-block;
+  }
+
+  .sig-date-input {
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 2px 4px;
+    outline: none;
+    width: 120px;
+    background: transparent;
+    -webkit-appearance: none;
+  }
+  .sig-date-input:focus { border-bottom-color: var(--navy); }
+  #sigCanvas {
+    border: 1.5px solid var(--line);
+    border-radius: 3px;
+    cursor: crosshair;
+    touch-action: none;
+    background: #fafbfd;
+    width: 100%;
+    height: 80px;
+  }
+  .sig-canvas-hint { font-size: 9px; color: var(--muted); margin-top: 4px; }
+  .btn-clear-sig {
+    margin-top: 5px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: fit-content;
+  }
+
+  /* ── NOTE ── */
+  .note {
+    font-size: 10px;
+    color: var(--muted);
+    padding: 10px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    line-height: 1.6;
+  }
+
+  /* ── ACTIONS ── */
+  .actions {
+    padding: 16px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+
+  .rechnr-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.05em;
+  }
+  .rechnr-badge span { font-weight: 600; color: #fff; }
+
+  /* ── INVOICE NUMBER ROW ── */
+  .rechnr-row {
+    background: var(--navy-light);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .rechnr-row label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .rechnr-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    background: #fff;
+    border: 1.5px solid var(--navy);
+    padding: 4px 12px;
+    letter-spacing: 0.08em;
+  }
+  .btn-new-rechnr {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--navy);
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .rechnr-hint { font-size: 10px; color: var(--muted); }
+
+  /* ── INSTALL BANNER ── */
+  #installBanner {
+    display: none;
+    background: var(--navy-light);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 20px;
+    align-items: center;
+    gap: 12px;
+  }
+  #installBanner p { font-size: 12px; color: var(--navy); flex: 1; line-height: 1.4; }
+  #installBanner p strong { font-weight: 600; }
+  .btn-install {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    cursor: pointer;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .btn-dismiss {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+  }
+
+  /* ── DESKTOP TWEAKS ── */
+  @media (min-width: 600px) {
+    .page-wrap { padding: 24px 24px 60px; }
+    .meta-strip { grid-template-columns: 1fr 1fr 1fr; }
+    .meta-strip .field-full { grid-column: auto; }
+    .pay-options { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .iban-row { padding-left: 0; flex-direction: row; }
+  }
+
+  /* GitHub-Badge ausblenden (GitHub Pages) */
+  #github-badge, .github-corner, [data-github-corner],
+  a[href*="github.com"] > svg { display: none !important; }
+
+  /* ── PRINT ── */
+  @media print {
+    .header-bar { position: static; background: #0f2d52 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .summary-bar { position: static; background: #0f2d52 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.pos-table thead tr { background: #0f2d52 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr.checked { background: #dce9ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr.group-head td { background: #e8eef7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.pos-table tbody tr:not(.checked):not(.group-head):not(.has-value) { display: none; }
+    tr.print-hide { display: none !important; }
+    .actions, #installBanner, .btn-clear-sig, .sig-canvas-hint, .iban-toggle, .btn-dismiss { display: none !important; }
+    #sigCanvas { border-color: #ccc !important; }
+    .doctor-sig-section { grid-template-columns: 1fr 1fr; }
+
+    /* ── SEITENUMBRÜCHE ── */
+    .payment-section { page-break-before: auto; }
+
+    /* Nur kleine Blöcke zusammenhalten – NICHT die ganze Tabelle */
+    .header-bar         { page-break-inside: avoid; }
+    .rechnr-row         { page-break-inside: avoid; }
+    .meta-strip         { page-break-inside: avoid; }
+    .doctor-sig-section { page-break-inside: avoid; }
+    .note               { page-break-inside: avoid; }
+    .payment-section    { page-break-inside: avoid; }
+
+    /* Einzelne Tabellenzeilen nicht umbrechen */
+    table.pos-table tbody tr { page-break-inside: avoid; }
+
+    /* summary-bar direkt nach Tabelle ohne Lücke */
+    .summary-bar { page-break-before: avoid; page-break-inside: avoid; }
+
+    /* Tabellenkopf auf jeder Seite wiederholen */
+    table.pos-table thead { display: table-header-group; }
+
+    /* Seitenränder */
+    @page { margin: 15mm 15mm 15mm 15mm; }
+  }
+  .break-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--navy);
+    color: var(--navy);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    cursor: pointer;
+    border-radius: 2px;
+    opacity: 0.5;
+    white-space: nowrap;
+  }
+  .break-toggle.active { background: var(--navy); color: #fff; opacity: 1; }
+  tr.group-head.page-break-before-print td { border-top: 2px dashed var(--navy); }
+  @media print {
+    .break-toggle { display: none !important; }
+    tr.group-head.page-break-before-print { page-break-before: always; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- RECHNUNGSNUMMER MODAL -->
+<div id="rechnrModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,45,82,0.85);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:32px 28px;max-width:320px;width:90%;text-align:center;border-radius:4px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7280;margin-bottom:8px;">Rechnungsnummer</div>
+    <input id="modalNrInput" type="text" style="font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;color:#0f2d52;letter-spacing:0.05em;border:none;border-bottom:2px solid #0f2d52;text-align:center;width:100%;outline:none;padding:4px 0 8px;background:transparent;margin-bottom:6px;">
+    <div style="font-size:11px;color:#6b7280;margin-bottom:24px;">Nummer bei Bedarf anpassen, dann drucken.</div>
+    <button onclick="confirmPrint()" style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:#0f2d52;color:#fff;border:none;padding:12px 28px;cursor:pointer;border-radius:2px;width:100%;">Drucken / PDF erstellen</button>
+    <button onclick="cancelPrint()" style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:transparent;color:#6b7280;border:none;padding:10px;cursor:pointer;margin-top:8px;width:100%;">Abbrechen</button>
+  </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner">
+  <p id="installText"><strong>Als App speichern:</strong> Tippe auf <strong>Teilen ↑</strong> → <strong>„Zum Home-Bildschirm"</strong> – dann offline nutzbar.</p>
+  <button class="btn-install" id="installBtn" style="display:none">Installieren</button>
+  <button class="btn-dismiss" onclick="dismissBanner()">✕</button>
+</div>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="header-bar">
+    <div>
+      <h1>Liquidation</h1>
+      <div class="subtitle">Ärztlicher Bereitschaftsdienst · KV Berlin</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+      <div class="goae-badge">GOÄ 1996</div>
+      <div class="rechnr-badge">Rech.-Nr. <span id="rechnrDisplay">—</span></div>
+    </div>
+  </div>
+
+  <!-- RECHNUNGSNUMMER -->
+  <div class="rechnr-row">
+    <label>Rechnungs-Nr.</label>
+    <div class="rechnr-num" id="rechnrField">—</div>
+    <span class="rechnr-hint" id="rechnrHint">wird beim Drucken vergeben</span>
+  </div>
+
+  <!-- META -->
+  <div class="meta-strip">
+    <div class="field-group field-full">
+      <label>Patient / in</label>
+      <input type="text" placeholder="Name, Vorname" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Diagnose (ICD)</label>
+      <input type="text" placeholder="z. B. J06.9" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Datum / Uhrzeit</label>
+      <input type="text" id="dateField" placeholder="TT.MM.JJJJ HH:MM" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- POSITIONS TABLE -->
+  <table class="pos-table" id="posTable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Nr.</th>
+        <th>Leistung</th>
+        <th style="text-align:right">Faktor</th>
+        <th style="text-align:right">Betrag</th>
+      </tr>
+    </thead>
+    <tbody id="posBody"></tbody>
+  </table>
+
+  <!-- STICKY TOTAL -->
+  <div class="summary-bar">
+    <div class="sum-left">
+      <span class="sum-label">Gesamtbetrag</span>
+      <span class="sum-count" id="sumCount">0 Positionen</span>
+    </div>
+    <span class="sum-value" id="sumValue">0,00 €</span>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="payment-section">
+    <h3>Zahlungsart</h3>
+    <div class="pay-options">
+      <div class="pay-option">
+        <input type="radio" name="pay" id="p1" value="bar">
+        <label for="p1">Betrag in bar erhalten</label>
+      </div>
+      <div class="pay-option">
+        <input type="radio" name="pay" id="p3" value="direkt">
+        <label for="p3">Per Direktüberweisung erhalten</label>
+      </div>
+      <div class="pay-option">
+        <input type="radio" name="pay" id="p2" value="ub" checked>
+        <label for="p2">Überweisung innerhalb 14 Tagen auf IBAN:</label>
+      </div>
+    </div>
+    <div class="iban-row">
+      <button class="iban-toggle" onclick="toggleIBAN()" id="ibanBtn">IBAN anzeigen</button>
+      <span class="iban-fixed" id="ibanDisplay" style="display:none">DE&nbsp;70&nbsp;3006&nbsp;0601&nbsp;0045&nbsp;9521&nbsp;63</span>
+    </div>
+  </div>
+
+  <!-- DOCTOR + SIGNATURE -->
+  <div class="doctor-sig-section">
+    <div class="doctor-stamp">
+      <span class="stamp-label">Behandelnder Arzt</span>
+      <div class="stamp-name">Dr. med. Julius Hoffmann</div>
+      <div class="stamp-detail">Facharzt für Allgemeinmedizin</div>
+      <div class="stamp-detail">BSNR&nbsp;727635000</div>
+    </div>
+    <div class="sig-area">
+      <div class="sig-date-row">
+        <span class="stamp-label">Datum</span>
+        <span class="sig-date-value" id="sigDate"></span>
+      </div>
+      <span class="stamp-label">Unterschrift</span>
+      <canvas id="sigCanvas" width="600" height="160"></canvas>
+      <div class="sig-canvas-hint">Mit Finger oder Maus unterschreiben</div>
+      <button class="btn-clear-sig" onclick="clearSig()">✕ Löschen</button>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note">
+    * Zuschläge E, F, G, H, K2 nur in Verbindung mit Pos. 50/51, jeweils einfacher Satz. Wegegeld nach § 8 GOÄ: Tag (8–20 Uhr) 6,55 €, Nacht (20–8 Uhr) 10,23 € (Radius 2–5 km).<br>
+    * Ärztliche Leistungen sind gemäß § 4 Nr. 14 Buchst. a Umsatzsteuergesetz (UStG) umsatzsteuerbefreit.
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-ghost" onclick="resetAll()">Zurücksetzen</button>
+    <button class="btn btn-primary" onclick="smartPrint()">🖨 Drucken / PDF</button>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── DATA ──
+var positions = [
+  { group: "Hausbesuch & Zuschlaege" },
+  { pos: "50",   desc: "Hausbesuch inkl. Beratung",                        faktor: "2,3-fach", computed: 42.90 },
+  { pos: "E",    desc: "Zuschlag \u2013 dringende Anforderung",             faktor: "1-fach",  computed:  9.33 },
+  { pos: "F",    desc: "Zuschlag \u2013 20\u201322 Uhr / 6\u20138 Uhr",   faktor: "1-fach",  computed: 15.15 },
+  { pos: "G",    desc: "Zuschlag \u2013 22\u20136 Uhr",                    faktor: "1-fach",  computed: 26.23 },
+  { pos: "H",    desc: "Zuschlag \u2013 Wochenende / Feiertag",            faktor: "1-fach",  computed: 19.82 },
+  { pos: "K2",   desc: "Zuschlag \u2013 Kind bis vollend. 4. Lebensjahr",  faktor: "1-fach",  computed:  9.33 },
+  { group: "Untersuchung & Beratung" },
+  { pos: "7",    desc: "Untersuchung eines Organsystems",                   faktor: "2,3-fach", computed: 21.46 },
+  { pos: "56",   desc: "Vollst\u00e4ndige k\u00f6rperliche Untersuchung",   faktor: "2,3-fach", computed: 35.79 },
+  { pos: "800",  desc: "Eingehende Untersuchung (neurologisch)",            faktor: "2,3-fach", computed: 26.14 },
+  { pos: "801",  desc: "Eingehende psychiatrische Untersuchung",            faktor: "2,3-fach", computed: 33.52 },
+  { pos: "804",  desc: "Therapeutisches Gespr\u00e4ch (mind. 10 Min.)",    faktor: "2,3-fach", computed: 20.11 },
+  { pos: "60",   desc: "Konsiliarische Er\u00f6rterung mit anderem Arzt",  faktor: "2,3-fach", computed: 16.09 },
+  { group: "Behandlung & Versorgung" },
+  { pos: "200",  desc: "Verband",                                           faktor: "2,3-fach", computed:  6.03 },
+  { pos: "2000", desc: "Erstversorgung einer kleinen Wunde",                faktor: "2,3-fach", computed:  9.38 },
+  { pos: "252",  desc: "Injektion subkutan / intramus\u006bul\u00e4r",      faktor: "2,3-fach", computed:  5.36 },
+  { pos: "253",  desc: "Injektion intraven\u00f6s",                         faktor: "2,3-fach", computed:  9.38 },
+  { pos: "271",  desc: "Infusion i.v., bis 30 Minuten",                    faktor: "2,3-fach", computed: 16.09 },
+  { pos: "272",  desc: "Infusion i.v., \u00fcber 30 Minuten",              faktor: "2,3-fach", computed: 24.13 },
+  { group: "Diagnostik & Labor" },
+  { pos: "602",  desc: "Pulsoximetrie (transkutane O\u2082-S\u00e4ttigung)", faktor: "1,8-fach",   computed: 15.95 },
+  { pos: "3514", desc: "Glukosebestimmung (Teststreifen)",                  faktor: "1,15-fach",  computed:  6.70 },
+  { group: "Bescheinigung & Sonstiges" },
+  { pos: "70",   desc: "Kurze Bescheinigung / Attest",                      faktor: "2,3-fach", computed:  5.36 },
+  { pos: "\u00a78",  desc: "Wegegeld 2\u20135 km \u2013 Tag (8\u201320 Uhr)",        faktor: "1-fach",  computed:  6.55 },
+  { pos: "\u00a78",  desc: "Wegegeld 2\u20135 km \u2013 Nacht (20\u20138 Uhr)",      faktor: "1-fach",  computed: 10.23 },
+  { custom: true }
+];
+
+var checkedSet = {};
+
+function fmt(v) {
+  return v.toFixed(2).replace('.', ',') + '\u00a0\u20ac';
+}
+
+function renderTable() {
+  var tbody = document.getElementById('posBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  var groupIndex = 0;
+
+  for (var i = 0; i < positions.length; i++) {
+    var p = positions[i];
+
+    if (p.group) {
+      var trG = document.createElement('tr');
+      trG.className = 'group-head';
+      var tdG = document.createElement('td');
+      tdG.setAttribute('colspan', '5');
+      tdG.textContent = p.group;
+
+      if (groupIndex > 0) {
+        var btn = document.createElement('button');
+        btn.className = 'break-toggle';
+        btn.textContent = '\u23ce Neue Seite';
+        (function(row, b) {
+          b.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (row.className.indexOf('page-break-before-print') === -1) {
+              row.className += ' page-break-before-print';
+              b.className += ' active';
+            } else {
+              row.className = row.className.replace(' page-break-before-print', '');
+              b.className = b.className.replace(' active', '');
+            }
+          });
+        })(trG, btn);
+        tdG.appendChild(btn);
+      }
+
+      trG.appendChild(tdG);
+      tbody.appendChild(trG);
+      groupIndex++;
+      continue;
+    }
+
+    if (p.custom) {
+      var trC = document.createElement('tr');
+      trC.className = 'custom-row';
+      trC.id = 'customRow';
+      trC.innerHTML = [
+        '<td class="check-col"><div class="cb-box" id="customCb">',
+        '<svg width="10" height="8" viewBox="0 0 10 8" fill="none">',
+        '<path d="M1 4L3.8 7L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+        '</svg></div></td>',
+        '<td class="pos-num"><input class="custom-desc-input" id="customPos" type="text" placeholder="Nr." autocomplete="off" style="font-family:monospace;font-size:11px;color:#1a4272;font-weight:500;width:36px"></td>',
+        '<td class="desc"><input class="custom-desc-input" id="customDesc" type="text" placeholder="Beschreibung ..." autocomplete="off"></td>',
+        '<td class="factor"><select class="custom-factor-select" id="customFaktor"><option value="1">1-fach</option><option value="2.3" selected>2,3-fach</option></select></td>',
+        '<td class="amount"><input class="custom-amount-input" id="customAmount" type="text" inputmode="decimal" placeholder="0,00"></td>'
+      ].join('');
+      tbody.appendChild(trC);
+
+      // Event-Handler als benannte Funktion AUSSERHALB des if-Blocks nicht möglich,
+      // daher als Variable zuweisen (iOS-sicher)
+      var updateCustomRow = function() {
+        var val = parseCustomAmount();
+        var descVal = document.getElementById('customDesc');
+        var filled = descVal && descVal.value.trim() !== '' && val > 0;
+        var row = document.getElementById('customRow');
+        var cb = document.getElementById('customCb');
+        var am = document.getElementById('customAmount');
+        if (!row || !cb) return;
+        if (filled) {
+          row.className = 'custom-row has-value';
+          cb.style.background = '#0f2d52';
+          cb.style.borderColor = '#0f2d52';
+          cb.querySelector('svg').style.display = 'block';
+          if (am) am.value = val.toFixed(2).replace('.', ',') + ' EUR';
+        } else {
+          row.className = 'custom-row';
+          cb.style.background = '';
+          cb.style.borderColor = '';
+          cb.querySelector('svg').style.display = 'none';
+        }
+        updateSum();
+      };
+
+      var onAmountInput = function() {
+        var val = parseCustomAmount();
+        var descVal = document.getElementById('customDesc');
+        var filled = descVal && descVal.value.trim() !== '' && val > 0;
+        var row = document.getElementById('customRow');
+        if (row) row.className = filled ? 'custom-row has-value' : 'custom-row';
+        updateSum();
+      };
+
+      var descEl2 = document.getElementById('customDesc');
+      var faktorEl2 = document.getElementById('customFaktor');
+      var amountEl2 = document.getElementById('customAmount');
+      if (descEl2) descEl2.addEventListener('input', updateCustomRow);
+      if (faktorEl2) faktorEl2.addEventListener('change', updateCustomRow);
+      if (amountEl2) {
+        amountEl2.addEventListener('blur', updateCustomRow);
+        amountEl2.addEventListener('input', onAmountInput);
+      }
+      continue;
+    }
+
+    // Normale Position
+    var trP = document.createElement('tr');
+    trP.setAttribute('data-idx', String(i));
+    if (checkedSet[i]) { trP.className = 'checked'; }
+    trP.innerHTML = [
+      '<td class="check-col"><div class="cb-box">',
+      '<svg width="10" height="8" viewBox="0 0 10 8" fill="none">',
+      '<path d="M1 4L3.8 7L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+      '</svg></div></td>',
+      '<td class="pos-num">', p.pos, '</td>',
+      '<td class="desc">', p.desc, '</td>',
+      '<td class="factor">', (p.faktor || '-'), '</td>',
+      '<td class="amount">', fmt(p.computed), '</td>'
+    ].join('');
+
+    (function(row, idx) {
+      row.addEventListener('click', function() {
+        if (checkedSet[idx]) {
+          delete checkedSet[idx];
+          row.className = '';
+        } else {
+          checkedSet[idx] = true;
+          row.className = 'checked';
+        }
+        updateSum();
+      });
+    })(trP, i);
+
+    tbody.appendChild(trP);
+  }
+}
+
+function parseCustomAmount() {
+  var el = document.getElementById('customAmount');
+  if (!el) return 0;
+  var raw = el.value.replace(/\s*EUR/, '').replace(/\s*\u20ac/, '').replace(',', '.').trim();
+  var v = parseFloat(raw);
+  return isNaN(v) ? 0 : v;
+}
+
+function updateSum() {
+  var total = 0;
+  var count = 0;
+  for (var idx in checkedSet) {
+    if (checkedSet[idx]) {
+      var p = positions[parseInt(idx)];
+      if (p && !p.group && !p.custom) {
+        total += p.computed;
+        count++;
+      }
+    }
+  }
+  var customRow = document.getElementById('customRow');
+  if (customRow && customRow.className.split(' ').indexOf('has-value') !== -1) {
+    total += parseCustomAmount();
+    count++;
+  }
+  document.getElementById('sumValue').textContent = fmt(total);
+  var label = count === 0 ? '0 Positionen' : count === 1 ? '1 Position' : count + ' Positionen';
+  document.getElementById('sumCount').textContent = label;
+}
+
+function resetAll() {
+  checkedSet = {};
+  var rows = document.querySelectorAll('tr.checked');
+  for (var i = 0; i < rows.length; i++) rows[i].className = '';
+  var breakRows = document.querySelectorAll('tr.group-head');
+  for (var j = 0; j < breakRows.length; j++) {
+    breakRows[j].className = 'group-head';
+    var bb = breakRows[j].querySelector('.break-toggle');
+    if (bb) bb.className = 'break-toggle';
+  }
+  updateSum();
+  clearSig();
+  var nameInput = document.querySelector('input[placeholder="Name, Vorname"]');
+  var diagInput = document.querySelector('input[placeholder="z. B. J06.9"]');
+  var dateInput = document.getElementById('dateField');
+  var p2 = document.getElementById('p2');
+  var ibanDisplay = document.getElementById('ibanDisplay');
+  var ibanBtn = document.getElementById('ibanBtn');
+  if (nameInput) nameInput.value = '';
+  if (diagInput) diagInput.value = '';
+  if (dateInput) dateInput.value = '';
+  if (p2) p2.checked = true;
+  if (ibanDisplay) ibanDisplay.style.display = 'none';
+  if (ibanBtn) ibanBtn.textContent = 'IBAN anzeigen';
+  var customPos = document.getElementById('customPos');
+  var customDesc = document.getElementById('customDesc');
+  var customAmount = document.getElementById('customAmount');
+  var customRow = document.getElementById('customRow');
+  var customCb = document.getElementById('customCb');
+  if (customPos) customPos.value = '';
+  if (customDesc) customDesc.value = '';
+  if (customAmount) customAmount.value = '';
+  if (customRow) customRow.className = 'custom-row';
+  if (customCb) {
+    customCb.style.background = '';
+    customCb.style.borderColor = '';
+    var svg = customCb.querySelector('svg');
+    if (svg) svg.style.display = 'none';
+  }
+  var resetNow = new Date();
+  document.getElementById('sigDate').textContent = resetNow.toLocaleDateString('de-DE');
+  if (dateInput) dateInput.placeholder = resetNow.toLocaleDateString('de-DE') + ' ' +
+    resetNow.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+
+function toggleIBAN() {
+  var d = document.getElementById('ibanDisplay');
+  var b = document.getElementById('ibanBtn');
+  if (!d || !b) return;
+  var show = d.style.display === 'none';
+  d.style.display = show ? 'inline' : 'none';
+  b.textContent = show ? 'IBAN verbergen' : 'IBAN anzeigen';
+}
+
+// ── AUTO DATE ──
+var now = new Date();
+var dateField = document.getElementById('dateField');
+if (dateField) {
+  dateField.placeholder = now.toLocaleDateString('de-DE') + ' ' +
+    now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+var sigDateEl = document.getElementById('sigDate');
+if (sigDateEl) sigDateEl.textContent = now.toLocaleDateString('de-DE');
+
+// ── RECHNUNGSNUMMER ──
+var currentRechnr = 0;
+
+function formatRechnr(year, counter) {
+  var s = String(counter);
+  while (s.length < 4) s = '0' + s;
+  return year + '-' + s;
+}
+
+function initRechnr() {
+  var year = new Date().getFullYear();
+  var key = 'goae_rechnr_' + year;
+  try { currentRechnr = parseInt(localStorage.getItem(key) || '0'); } catch(e) { currentRechnr = 0; }
+  var nr = currentRechnr === 0 ? '\u2014' : formatRechnr(year, currentRechnr);
+  document.getElementById('rechnrField').textContent = nr;
+  document.getElementById('rechnrDisplay').textContent = nr;
+}
+
+try { initRechnr(); } catch(e) {}
+try { renderTable(); } catch(e) { console.error('renderTable:', e); }
+try { updateSum(); } catch(e) {}
+
+// ── SIGNATURE PAD ──
+(function() {
+  var canvas = document.getElementById('sigCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var drawing = false, lx = 0, ly = 0;
+
+  function getPos(e) {
+    var r = canvas.getBoundingClientRect();
+    var sx = canvas.width / r.width;
+    var sy = canvas.height / r.height;
+    var src = (e.touches && e.touches.length > 0) ? e.touches[0] : e;
+    return [(src.clientX - r.left) * sx, (src.clientY - r.top) * sy];
+  }
+  function start(e) {
+    e.preventDefault();
+    drawing = true;
+    var p = getPos(e);
+    lx = p[0]; ly = p[1];
+    ctx.beginPath();
+    ctx.arc(lx, ly, 1.2, 0, Math.PI * 2);
+    ctx.fillStyle = '#0f2d52';
+    ctx.fill();
+  }
+  function move(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    var p = getPos(e);
+    var x = p[0], y = p[1];
+    ctx.beginPath();
+    ctx.moveTo(lx, ly);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = '#0f2d52';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    lx = x; ly = y;
+  }
+  function stop() { drawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', stop);
+  canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', stop);
+})();
+
+function clearSig() {
+  var c = document.getElementById('sigCanvas');
+  if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+// ── SMART PRINT ──
+function smartPrint() {
+  var year = new Date().getFullYear();
+  var nextNr = currentRechnr + 1;
+  var nrFormatted = formatRechnr(year, nextNr);
+  document.getElementById('modalNrInput').value = nrFormatted;
+  var modal = document.getElementById('rechnrModal');
+  modal.style.display = 'flex';
+  setTimeout(function() {
+    var inp = document.getElementById('modalNrInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function cancelPrint() {
+  document.getElementById('rechnrModal').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var modal = document.getElementById('rechnrModal');
+    if (modal && modal.style.display === 'flex') cancelPrint();
+  }
+});
+
+// ── BEFORE/AFTER PRINT: leere Gruppenköpfe ausblenden ──
+// beforeprint feuert garantiert VOR dem Print-Rendering (auch iOS Safari)
+window.addEventListener('beforeprint', function() {
+  var tbody = document.getElementById('posBody');
+  if (!tbody) return;
+  var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+  rows.forEach(function(tr) {
+    if (!tr.classList.contains('group-head')) return;
+    var hasChecked = false;
+    var next = tr.nextElementSibling;
+    while (next) {
+      if (next.classList.contains('group-head')) break;
+      if (next.classList.contains('checked') || next.classList.contains('has-value')) {
+        hasChecked = true; break;
+      }
+      next = next.nextElementSibling;
+    }
+    if (!hasChecked) tr.classList.add('print-hide');
+  });
+});
+
+// afterprint: Klassen wieder entfernen
+window.addEventListener('afterprint', function() {
+  var rows = document.querySelectorAll('tr.print-hide');
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].classList.remove('print-hide');
+  }
+});
+
+function confirmPrint() {
+  var year = new Date().getFullYear();
+  var key = 'goae_rechnr_' + year;
+  var inputVal = document.getElementById('modalNrInput').value.trim();
+  var match = inputVal.match(/\d{4}-(\d+)$/);
+  if (match) {
+    currentRechnr = parseInt(match[1]);
+  } else {
+    currentRechnr = currentRechnr + 1;
+  }
+  try { localStorage.setItem(key, currentRechnr); } catch(e) {}
+  document.getElementById('rechnrField').textContent = inputVal;
+  document.getElementById('rechnrDisplay').textContent = inputVal;
+  document.getElementById('rechnrModal').style.display = 'none';
+
+  window.print();
+}
+
+// ── PWA / INSTALL BANNER ──
+var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var isStandalone = window.navigator.standalone === true;
+var dismissed = (function() { try { return sessionStorage.getItem('bannerDismissed'); } catch(e) { return null; } })();
+if (isIOS && !isStandalone && !dismissed) {
+  document.getElementById('installBanner').style.display = 'flex';
+}
+
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  var banner = document.getElementById('installBanner');
+  var btn = document.getElementById('installBtn');
+  document.getElementById('installText').innerHTML = '<strong>Als App installieren</strong> \u2013 offline auf dem Homescreen nutzen.';
+  btn.style.display = 'block';
+  banner.style.display = 'flex';
+  btn.addEventListener('click', function() {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  });
+});
+
+function dismissBanner() {
+  document.getElementById('installBanner').style.display = 'none';
+  try { sessionStorage.setItem('bannerDismissed', '1'); } catch(e) {}
+}
+
+// ── SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  var swCode = [
+    'var CACHE="goae-v1";',
+    'self.addEventListener("install",function(e){',
+    '  e.waitUntil(caches.open(CACHE).then(function(c){',
+    '    return c.addAll(["https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"]).catch(function(){});',
+    '  }));self.skipWaiting();',
+    '});',
+    'self.addEventListener("activate",function(e){',
+    '  e.waitUntil(caches.keys().then(function(keys){',
+    '    return Promise.all(keys.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));',
+    '  }));self.clients.claim();',
+    '});',
+    'self.addEventListener("fetch",function(e){',
+    '  e.respondWith(caches.match(e.request).then(function(cached){return cached||fetch(e.request).catch(function(){return cached;});}));',
+    '});'
+  ].join('\n');
+  try {
+    var blob = new Blob([swCode], { type: 'application/javascript' });
+    var swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(function() {});
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
