@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GOÄ Liquidation">
+<meta name="theme-color" content="#0f2d52">
+<title>Liquidation – KV Berlin</title>
+
+<!-- PWA Manifest inline -->
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22GO%C3%84%20Liquidation%20KV%20Berlin%22%2C%22short_name%22%3A%22Liquidation%22%2C%22description%22%3A%22%C3%84rztlicher%20Bereitschaftsdienst%20KV%20Berlin%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4f6fb%22%2C%22theme_color%22%3A%22%230f2d52%22%2C%22orientation%22%3A%22portrait%22%7D">
+
+<!-- Apple Touch Icon (inline SVG→canvas) -->
+<link rel="apple-touch-icon" id="appIcon">
+
+<!-- Google Fonts with display=swap for offline fallback -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0f2d52;
+    --navy-mid: #1a4272;
+    --navy-light: #e8eef7;
+    --accent: #c8102e;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --line: #d1d9e6;
+    --bg: #f4f6fb;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { height: 100%; }
+  body { min-height: 100%; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 0 calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ── STICKY HEADER ── */
+  .header-bar {
+    background: var(--navy);
+    color: #fff;
+    padding: 16px 20px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-bar h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; }
+  .header-bar .subtitle { font-size: 10px; opacity: 0.7; font-weight: 300; margin-top: 2px; }
+  .goae-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 3px 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap;
+  }
+
+  /* ── PATIENT META ── */
+  .meta-strip {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .meta-strip .field-full { grid-column: 1 / -1; }
+  .field-group label {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .field-group input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    padding: 2px 0 5px;
+    outline: none;
+    border-radius: 0;
+    -webkit-appearance: none;
+  }
+  .field-group input:focus { border-bottom-color: var(--navy); }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: var(--text) !important;
+    background-color: #ffffff !important;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 20px 6px;
+    background: #fff;
+  }
+
+  /* ── POSITIONS TABLE ── */
+  table.pos-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+  table.pos-table thead tr { background: var(--navy); color: #fff; }
+  table.pos-table thead th {
+    padding: 8px 8px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-align: left;
+  }
+  table.pos-table thead th:nth-child(4),
+  table.pos-table thead th:nth-child(5) { text-align: right; }
+
+  table.pos-table tbody tr {
+    border-bottom: 1px solid var(--line);
+    transition: background 0.1s;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  table.pos-table tbody tr:active { background: var(--navy-light) !important; }
+  table.pos-table tbody tr.checked { background: #e6f0ff; }
+  table.pos-table tbody tr.checked td.pos-num { font-weight: 600; color: var(--navy); }
+  table.pos-table tbody tr.checked td.amount { font-weight: 700; color: var(--navy); }
+
+  table.pos-table tbody td {
+    padding: 10px 8px;
+    font-size: 12px;
+    vertical-align: middle;
+  }
+  td.check-col { width: 32px; text-align: center; }
+  td.pos-num   { width: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--navy-mid); font-weight: 500; }
+  td.desc      { font-size: 11.5px; line-height: 1.35; }
+  td.factor    { width: 82px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+  td.amount    { width: 88px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+
+  .cb-box {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  tr.checked .cb-box { background: var(--navy); border-color: var(--navy); }
+  .cb-box svg { display: none; }
+  tr.checked .cb-box svg { display: block; }
+
+  /* ── FREIFELD-ZEILE ── */
+  tr.custom-row { cursor: default !important; }
+  tr.custom-row:active { background: #fff !important; }
+  tr.custom-row.has-value { background: #e6f0ff; }
+  tr.custom-row.has-value td.amount { font-weight: 700; color: var(--navy); }
+  .custom-desc-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 11.5px;
+    color: var(--text);
+    padding: 2px 0 3px;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .custom-desc-input:focus { border-bottom-color: var(--navy); }
+  .custom-factor-select {
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    outline: none;
+    width: 100%;
+    text-align: right;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    padding: 2px 0 3px;
+  }
+  .custom-factor-select:focus { border-bottom-color: var(--navy); }
+  .custom-amount-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    background: transparent;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    padding: 2px 0 3px;
+    outline: none;
+    text-align: right;
+    -webkit-appearance: none;
+  }
+  .custom-amount-input:focus { border-bottom-color: var(--navy); }
+  @media print {
+    body, table, td, th, input { font-size: 10px !important; }
+    .pos-num { font-size: 10px !important; }
+    tr.custom-row:not(.has-value) { display: none; }
+    .custom-desc-input, .custom-factor-select, .custom-amount-input {
+      border-bottom: none !important;
+    }
+  }
+
+  tr.group-head td {
+    background: var(--navy-light);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+    padding: 5px 8px 4px 42px;
+    cursor: default;
+    position: relative;
+    border-bottom: none;
+  }
+  tr.group-head:active { background: var(--navy-light) !important; }
+
+  /* ── STICKY TOTAL BAR ── */
+  .summary-bar {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
+    bottom: var(--safe-bottom);
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    z-index: 100;
+  }
+  .sum-left { display: flex; flex-direction: column; gap: 1px; }
+  .sum-label { font-size: 10px; opacity: 0.7; letter-spacing: 0.05em; }
+  .sum-count { font-size: 11px; opacity: 0.55; font-family: 'IBM Plex Mono', monospace; }
+  .sum-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── PAYMENT ── */
+  .payment-section {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+  }
+  .payment-section h3 {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .pay-options { display: flex; flex-direction: column; gap: 10px; }
+  .pay-option {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+  }
+  .pay-option input[type="radio"] {
+    width: 18px; height: 18px;
+    accent-color: var(--navy);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .pay-option label { font-size: 13px; cursor: pointer; }
+  .iban-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding-left: 28px;
+    margin-top: -4px;
+  }
+  .iban-fixed {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+    letter-spacing: 0.04em;
+    background: var(--navy-light);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .iban-toggle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: transparent;
+    border: 1.5px solid var(--navy);
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  /* ── DOCTOR + SIGNATURE ── */
+  .doctor-sig-section {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .doctor-stamp {
+    border-left: 3px solid var(--navy);
+    padding-left: 12px;
+  }
+  .stamp-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 5px;
+    display: block;
+  }
+  .stamp-name { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .stamp-detail { font-size: 11.5px; color: var(--muted); margin-bottom: 1px; }
+
+  .sig-area { display: flex; flex-direction: column; }
+  .sig-date-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .sig-date-value {
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--navy);
+    font-weight: 500;
+    border-bottom: 1.5px solid var(--line);
+    padding: 2px 4px 4px;
+    min-width: 100px;
+    display: inline-block;
+  }
+
+  .sig-date-input {
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    padding: 2px 4px;
+    outline: none;
+    width: 120px;
+    background: transparent;
+    -webkit-appearance: none;
+  }
+  .sig-date-input:focus { border-bottom-color: var(--navy); }
+  #sigCanvas {
+    border: 1.5px solid var(--line);
+    border-radius: 3px;
+    cursor: crosshair;
+    touch-action: none;
+    background: #fafbfd;
+    width: 100%;
+    height: 80px;
+  }
+  .sig-canvas-hint { font-size: 9px; color: var(--muted); margin-top: 4px; }
+  .btn-clear-sig {
+    margin-top: 5px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: fit-content;
+  }
+
+  /* ── NOTE ── */
+  .note {
+    font-size: 10px;
+    color: var(--muted);
+    padding: 10px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    line-height: 1.6;
+  }
+
+  /* ── ACTIONS ── */
+  .actions {
+    padding: 16px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 2px;
+    -webkit-appearance: none;
+  }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+
+  .rechnr-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.05em;
+  }
+  .rechnr-badge span { font-weight: 600; color: #fff; }
+
+  /* ── INVOICE NUMBER ROW ── */
+  .rechnr-row {
+    background: var(--navy-light);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .rechnr-row label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .rechnr-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    background: #fff;
+    border: 1.5px solid var(--navy);
+    padding: 4px 12px;
+    letter-spacing: 0.08em;
+  }
+  .btn-new-rechnr {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--navy);
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .rechnr-hint { font-size: 10px; color: var(--muted); }
+
+  /* ── INSTALL BANNER ── */
+  #installBanner {
+    display: none;
+    background: var(--navy-light);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 20px;
+    align-items: center;
+    gap: 12px;
+  }
+  #installBanner p { font-size: 12px; color: var(--navy); flex: 1; line-height: 1.4; }
+  #installBanner p strong { font-weight: 600; }
+  .btn-install {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    cursor: pointer;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .btn-dismiss {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+  }
+
+  /* ── DESKTOP TWEAKS ── */
+  @media (min-width: 600px) {
+    .page-wrap { padding: 24px 24px 60px; }
+    .meta-strip { grid-template-columns: 1fr 1fr 1fr; }
+    .meta-strip .field-full { grid-column: auto; }
+    .pay-options { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .iban-row { padding-left: 0; flex-direction: row; }
+  }
+
+  /* GitHub-Badge ausblenden (GitHub Pages) */
+  #github-badge, .github-corner, [data-github-corner],
+  a[href*="github.com"] > svg { display: none !important; }
+
+  /* ── PRINT ── */
+  @media print {
+    .header-bar { position: static; background: #0f2d52 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .summary-bar { position: static; background: #0f2d52 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.pos-table thead tr { background: #0f2d52 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr.checked { background: #dce9ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tr.group-head td { background: #e8eef7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.pos-table tbody tr:not(.checked):not(.group-head):not(.has-value) { display: none; }
+    tr.print-hide { display: none !important; }
+    .actions, #installBanner, .btn-clear-sig, .sig-canvas-hint, .iban-toggle, .btn-dismiss { display: none !important; }
+    #sigCanvas { border-color: #ccc !important; background: transparent !important; height: 45px !important; max-height: 45px !important; }
+    #sigCanvas:not([data-signed]) { border-color: transparent !important; background: transparent !important; }
+    .doctor-sig-section { grid-template-columns: 1fr 1fr; }
+
+    /* ── SEITENUMBRÜCHE ── */
+    .payment-section { page-break-before: auto; }
+
+    /* Nur kleine Blöcke zusammenhalten – NICHT die ganze Tabelle */
+    .header-bar         { page-break-inside: avoid; }
+    .rechnr-row         { page-break-inside: avoid; }
+    .meta-strip         { page-break-inside: avoid; }
+    .doctor-sig-section { page-break-inside: avoid; }
+    .note               { page-break-inside: avoid; }
+    .payment-section    { page-break-inside: avoid; }
+
+    /* Einzelne Tabellenzeilen nicht umbrechen */
+    table.pos-table tbody tr { page-break-inside: avoid; }
+
+    /* summary-bar direkt nach Tabelle ohne Lücke */
+    .summary-bar { page-break-before: avoid; page-break-inside: avoid; }
+
+    /* Tabellenkopf auf jeder Seite wiederholen */
+    table.pos-table thead { display: table-header-group; }
+
+    /* Seitenränder */
+    @page { margin: 15mm 15mm 15mm 15mm; }
+  }
+  .break-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--navy);
+    color: var(--navy);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    cursor: pointer;
+    border-radius: 2px;
+    opacity: 0.5;
+    white-space: nowrap;
+  }
+  .break-toggle.active { background: var(--navy); color: #fff; opacity: 1; }
+  tr.group-head.page-break-before-print td { border-top: 2px dashed var(--navy); }
+  @media print {
+    .break-toggle { display: none !important; }
+    tr.group-head.page-break-before-print { page-break-before: always; }
+  }
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<!-- RECHNUNGSNUMMER MODAL -->
+<div id="rechnrModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,45,82,0.85);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:32px 28px;max-width:320px;width:90%;text-align:center;border-radius:4px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7280;margin-bottom:8px;">Rechnungsnummer</div>
+    <input id="modalNrInput" type="text" style="font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;color:#0f2d52;letter-spacing:0.05em;border:none;border-bottom:2px solid #0f2d52;text-align:center;width:100%;outline:none;padding:4px 0 8px;background:transparent;margin-bottom:6px;">
+    <div style="font-size:11px;color:#6b7280;margin-bottom:24px;">Nummer bei Bedarf anpassen, dann drucken.</div>
+    <button onclick="confirmPrint()" style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:#0f2d52;color:#fff;border:none;padding:12px 28px;cursor:pointer;border-radius:2px;width:100%;">Drucken / PDF erstellen</button>
+    <button onclick="cancelPrint()" style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:transparent;color:#6b7280;border:none;padding:10px;cursor:pointer;margin-top:8px;width:100%;">Abbrechen</button>
+  </div>
+</div>
+
+
+<!-- EINSTELLUNGEN MODAL -->
+<div id="settingsModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,45,82,0.85);z-index:999;align-items:center;justify-content:center;-webkit-overflow-scrolling:touch;overflow-y:auto;">
+  <div style="background:#fff;padding:28px 24px;max-width:360px;width:90%;border-radius:4px;margin:20px auto;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7280;margin-bottom:18px;">⚙ Einstellungen</div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;display:block;margin-bottom:4px;">Arztname</label>
+      <input id="setName" type="text" placeholder="Dr. med. Max Mustermann" autocomplete="off" style="width:100%;border:none;border-bottom:1.5px solid #d1d9e6;padding:6px 0;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;background:transparent;">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;display:block;margin-bottom:4px;">Fachbezeichnung</label>
+      <input id="setFach" type="text" placeholder="Facharzt für Allgemeinmedizin" autocomplete="off" style="width:100%;border:none;border-bottom:1.5px solid #d1d9e6;padding:6px 0;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;background:transparent;">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;display:block;margin-bottom:4px;">BSNR</label>
+      <input id="setBsnr" type="text" placeholder="123456789" autocomplete="off" inputmode="numeric" style="width:100%;border:none;border-bottom:1.5px solid #d1d9e6;padding:6px 0;font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none;background:transparent;">
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;display:block;margin-bottom:4px;">IBAN</label>
+      <input id="setIban" type="text" placeholder="DE12 3456 7890 1234 5678 90" autocomplete="off" style="width:100%;border:none;border-bottom:1.5px solid #d1d9e6;padding:6px 0;font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none;background:transparent;">
+    </div>
+    <button onclick="saveSettings()" style="font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:#0f2d52;color:#fff;border:none;padding:12px 24px;cursor:pointer;border-radius:2px;width:100%;margin-bottom:8px;">Speichern</button>
+    <button onclick="closeSettings()" style="font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;background:transparent;color:#6b7280;border:none;padding:8px;cursor:pointer;width:100%;">Abbrechen</button>
+  </div>
+</div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner">
+  <p id="installText"><strong>Als App speichern:</strong> Tippe auf <strong>Teilen ↑</strong> → <strong>„Zum Home-Bildschirm"</strong> – dann offline nutzbar.</p>
+  <button class="btn-install" id="installBtn" style="display:none">Installieren</button>
+  <button class="btn-dismiss" onclick="dismissBanner()">✕</button>
+</div>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="header-bar">
+    <div>
+      <h1>Liquidation</h1>
+      <div class="subtitle">Ärztlicher Bereitschaftsdienst · KV Berlin</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="goae-badge">GOÄ 1996</div>
+        <button onclick="openSettings()" title="Einstellungen" style="background:rgba(255,255,255,0.15);border:none;color:#fff;cursor:pointer;padding:3px 7px;border-radius:2px;font-size:13px;line-height:1;">⚙</button>
+      </div>
+      <div class="rechnr-badge">Rech.-Nr. <span id="rechnrDisplay">—</span></div>
+    </div>
+  </div>
+
+  <!-- RECHNUNGSNUMMER -->
+  <div class="rechnr-row">
+    <label>Rechnungs-Nr.</label>
+    <div class="rechnr-num" id="rechnrField">—</div>
+    <span class="rechnr-hint" id="rechnrHint">wird beim Drucken vergeben</span>
+  </div>
+
+  <!-- META -->
+  <div class="meta-strip">
+    <div class="field-group field-full">
+      <label>Patient / in</label>
+      <input type="text" placeholder="Name, Vorname" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Diagnose (ICD)</label>
+      <input type="text" placeholder="z. B. J06.9" autocomplete="off">
+    </div>
+    <div class="field-group">
+      <label>Datum / Uhrzeit</label>
+      <input type="text" id="dateField" placeholder="TT.MM.JJJJ HH:MM" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- POSITIONS TABLE -->
+  <table class="pos-table" id="posTable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Nr.</th>
+        <th>Leistung</th>
+        <th style="text-align:right">Faktor</th>
+        <th style="text-align:right">Betrag</th>
+      </tr>
+    </thead>
+    <tbody id="posBody"></tbody>
+  </table>
+
+  <!-- STICKY TOTAL -->
+  <div class="summary-bar">
+    <div class="sum-left">
+      <span class="sum-label">Gesamtbetrag</span>
+      <span class="sum-count" id="sumCount">0 Positionen</span>
+    </div>
+    <span class="sum-value" id="sumValue">0,00 €</span>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="payment-section">
+    <h3>Zahlungsart</h3>
+    <div class="pay-options">
+      <div class="pay-option">
+        <input type="radio" name="pay" id="p1" value="bar" onclick="toggleIbanRow(false)">
+        <label for="p1">Betrag erhalten (Bar oder Direktüberweisung)</label>
+      </div>
+      <div class="pay-option">
+        <input type="radio" name="pay" id="p2" value="ub" checked onclick="toggleIbanRow(true)">
+        <label for="p2">Bitte Überweisung innerhalb 14 Tagen auf IBAN:</label>
+      </div>
+    </div>
+    <div class="iban-row" id="ibanRow">
+      <span class="iban-fixed" id="ibanDisplay">DE&nbsp;70&nbsp;3006&nbsp;0601&nbsp;0045&nbsp;9521&nbsp;63</span>
+    </div>
+  </div>
+
+  <!-- DOCTOR + SIGNATURE -->
+  <div class="doctor-sig-section">
+    <div class="doctor-stamp">
+      <span class="stamp-label">Behandelnder Arzt</span>
+      <div class="stamp-name" id="doctorName">Dr. med. Julius Hoffmann</div>
+      <div class="stamp-detail" id="doctorFach">Facharzt für Allgemeinmedizin</div>
+      <div class="stamp-detail" id="doctorBsnr">BSNR&nbsp;727635000</div>
+    </div>
+    <div class="sig-area">
+      <div class="sig-date-row">
+        <span class="stamp-label">Datum</span>
+        <span class="sig-date-value" id="sigDate"></span>
+      </div>
+      <span class="stamp-label">Unterschrift</span>
+      <canvas id="sigCanvas" width="600" height="160"></canvas>
+      <div class="sig-canvas-hint">Mit Finger oder Maus unterschreiben</div>
+      <button class="btn-clear-sig" onclick="clearSig()">✕ Löschen</button>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note">
+    * Zuschläge E, F, G, H, K2 nur in Verbindung mit Pos. 50/51, jeweils einfacher Satz. Fahrtkostenpauschale KV Berlin 18,50 € (statt Wegegeld § 8 GOÄ).<br>
+    * Ärztliche Leistungen sind gemäß § 4 Nr. 14 Buchst. a Umsatzsteuergesetz (UStG) umsatzsteuerbefreit.
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-ghost" onclick="resetAll()">Zurücksetzen</button>
+    <button class="btn btn-primary" onclick="exportPDF()">📋 PDF erstellen</button>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── DATA ──
+var positions = [
+  { group: "Hausbesuch & Zuschlaege" },
+  { pos: "50",   desc: "Hausbesuch inkl. Beratung",                        faktor: "2,3-fach", computed: 42.90 },
+  { pos: "E",    desc: "Zuschlag \u2013 dringende Anforderung",             faktor: "1-fach",  computed:  9.33 },
+  { pos: "F",    desc: "Zuschlag \u2013 20\u201322 Uhr / 6\u20138 Uhr",   faktor: "1-fach",  computed: 15.15 },
+  { pos: "G",    desc: "Zuschlag \u2013 22\u20136 Uhr",                    faktor: "1-fach",  computed: 26.23 },
+  { pos: "H",    desc: "Zuschlag \u2013 Wochenende / Feiertag",            faktor: "1-fach",  computed: 19.82 },
+  { pos: "K2",   desc: "Zuschlag \u2013 Kind bis vollend. 4. Lebensjahr",  faktor: "1-fach",  computed:  9.33 },
+  { group: "Untersuchung & Beratung" },
+  { pos: "3",    desc: "Eingehende Beratung (mind. 10 Min.)",                                    faktor: "2,3-fach", computed: 20.15 },
+  { pos: "7",    desc: "Untersuchung eines Organsystems",                                        faktor: "2,3-fach", computed: 21.46 },
+  { pos: "8",    desc: "Ganzkörperuntersuchung / vollständige körperliche Untersuchung",         faktor: "2,3-fach", computed: 35.79 },
+  { pos: "34",   desc: "Erörterung bei lebensverändernder Diagnose (max. 2×/halbes Jahr)",       faktor: "2,3-fach", computed: 34.63 },
+  { pos: "800",  desc: "Eingehende Untersuchung (neurologisch)",                                 faktor: "2,3-fach", computed: 26.14 },
+  { pos: "801",  desc: "Eingehende psychiatrische Untersuchung",                                 faktor: "2,3-fach", computed: 33.52 },
+  { pos: "804",  desc: "Psychiatr. Behandlung / therapeut. Gespräch (psych. Indikation)",       faktor: "2,3-fach", computed: 20.11 },
+  { pos: "60",   desc: "Konsiliarische Erörterung mit anderem Arzt",                            faktor: "2,3-fach", computed: 16.09 },
+  { group: "Behandlung & Versorgung" },
+  { pos: "200",  desc: "Verband",                                           faktor: "2,3-fach", computed:  6.03 },
+  { pos: "2000", desc: "Erstversorgung einer kleinen Wunde",                faktor: "2,3-fach", computed:  9.38 },
+  { pos: "252",  desc: "Injektion subkutan / intramus\u006bul\u00e4r",      faktor: "2,3-fach", computed:  5.36 },
+  { pos: "253",  desc: "Injektion intraven\u00f6s",                         faktor: "2,3-fach", computed:  9.38 },
+  { pos: "271",  desc: "Infusion i.v., bis 30 Minuten",                    faktor: "2,3-fach", computed: 16.09 },
+  { pos: "272",  desc: "Infusion i.v., \u00fcber 30 Minuten",              faktor: "2,3-fach", computed: 24.13 },
+  { group: "Diagnostik & Labor" },
+  { pos: "602",  desc: "Pulsoximetrie (transkutane O\u2082-S\u00e4ttigung)", faktor: "1,8-fach",   computed: 15.95 },
+  { pos: "3514", desc: "Glukosebestimmung (Teststreifen)",                  faktor: "1,15-fach",  computed:  6.70 },
+  { group: "Bescheinigung & Sonstiges" },
+  { pos: "70",   desc: "Kurze Bescheinigung / Attest",                      faktor: "2,3-fach", computed:  5.36 },
+  { pos: "FKP",  desc: "Fahrtkostenpauschale KV Berlin (statt Wegegeld \u00a78 GO\u00c4)", faktor: "1-fach",  computed: 18.50 },
+];  // custom rows werden dynamisch erzeugt
+
+var checkedSet = {};
+
+function fmt(v) {
+  return v.toFixed(2).replace('.', ',') + '\u00a0\u20ac';
+}
+
+// ── CUSTOM ROWS: dynamische Freifelder ──
+var customRows = []; // [{id, pos, desc, faktor, amount, filled}]
+var customCounter = 0;
+
+function makeCustomId() { customCounter++; return 'cr_' + customCounter; }
+
+function createCustomRow(tbody, afterRow) {
+  var id = makeCustomId();
+  var obj = { id: id, filled: false };
+  customRows.push(obj);
+
+  var tr = document.createElement('tr');
+  tr.className = 'custom-row';
+  tr.setAttribute('data-cid', id);
+  tr.innerHTML = [
+    '<td class="check-col"><div class="cb-box" id="cb_'+id+'">',
+    '<svg width="10" height="8" viewBox="0 0 10 8" fill="none">',
+    '<path d="M1 4L3.8 7L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    '</svg></div></td>',
+    '<td class="pos-num"><input class="custom-desc-input" id="pos_'+id+'" type="text" placeholder="Nr." autocomplete="off" style="font-family:monospace;font-size:11px;color:#1a4272;font-weight:500;width:36px"></td>',
+    '<td class="desc"><input class="custom-desc-input" id="desc_'+id+'" type="text" placeholder="Beschreibung ..." autocomplete="off"></td>',
+    '<td class="factor"><select class="custom-factor-select" id="fak_'+id+'"><option value="1">1-fach</option><option value="2.3" selected>2,3-fach</option></select></td>',
+    '<td class="amount"><input class="custom-amount-input" id="amt_'+id+'" type="text" inputmode="decimal" placeholder="0,00"></td>'
+  ].join('');
+
+  if (afterRow) {
+    afterRow.parentNode.insertBefore(tr, afterRow.nextSibling);
+  } else {
+    tbody.appendChild(tr);
+  }
+
+  // Bind events
+  (function(rowEl, cid) {
+    var descEl  = document.getElementById('desc_' + cid);
+    var fakEl   = document.getElementById('fak_'  + cid);
+    var amtEl   = document.getElementById('amt_'  + cid);
+    var cbEl    = document.getElementById('cb_'   + cid);
+
+    var getAmt = function() {
+      if (!amtEl) return 0;
+      var raw = amtEl.value.replace(/\s*EUR/,'').replace(/\s*\u20ac/,'').replace(',','.').trim();
+      var v = parseFloat(raw);
+      return isNaN(v) ? 0 : v;
+    };
+
+    var refresh = function() {
+      var desc = descEl ? descEl.value.trim() : '';
+      var amt  = getAmt();
+      var filled = desc !== '' && amt > 0;
+      // Update obj
+      for (var k = 0; k < customRows.length; k++) {
+        if (customRows[k].id === cid) {
+          customRows[k].filled  = filled;
+          customRows[k].pos     = document.getElementById('pos_' + cid) ? document.getElementById('pos_' + cid).value : '';
+          customRows[k].desc    = desc;
+          customRows[k].faktor  = fakEl ? fakEl.options[fakEl.selectedIndex].text : '';
+          customRows[k].amount  = amt;
+          break;
+        }
+      }
+      if (filled) {
+        rowEl.className = 'custom-row has-value';
+        cbEl.style.background = '#0f2d52';
+        cbEl.style.borderColor = '#0f2d52';
+        cbEl.querySelector('svg').style.display = 'block';
+        // Auto-expand: ensure there's always one empty row after the last filled
+        ensureEmptyCustomRow(rowEl);
+      } else {
+        rowEl.className = 'custom-row';
+        cbEl.style.background = '';
+        cbEl.style.borderColor = '';
+        cbEl.querySelector('svg').style.display = 'none';
+      }
+      updateSum();
+    }
+
+    // refreshQuiet: aktualisiert Summe/State OHNE neue Zeile zu öffnen
+    var refreshQuiet = function() {
+      var desc = descEl ? descEl.value.trim() : '';
+      var amt  = getAmt();
+      var filled = desc !== '' && amt > 0;
+      for (var k = 0; k < customRows.length; k++) {
+        if (customRows[k].id === cid) {
+          customRows[k].filled  = filled;
+          customRows[k].pos     = document.getElementById('pos_' + cid) ? document.getElementById('pos_' + cid).value : '';
+          customRows[k].desc    = desc;
+          customRows[k].faktor  = fakEl ? fakEl.options[fakEl.selectedIndex].text : '';
+          customRows[k].amount  = amt;
+          break;
+        }
+      }
+      if (filled) {
+        rowEl.className = 'custom-row has-value';
+        cbEl.style.background = '#0f2d52';
+        cbEl.style.borderColor = '#0f2d52';
+        cbEl.querySelector('svg').style.display = 'block';
+      } else {
+        rowEl.className = 'custom-row';
+        cbEl.style.background = '';
+        cbEl.style.borderColor = '';
+        cbEl.querySelector('svg').style.display = 'none';
+      }
+      updateSum();
+    };
+
+    // input: nur State aktualisieren, KEINE neue Zeile
+    if (descEl) descEl.addEventListener('input', refreshQuiet);
+    if (fakEl)  fakEl.addEventListener('change', refresh); // change = fertig
+    // blur: Betrag formatieren + neue Zeile nur wenn komplett ausgefüllt
+    if (amtEl) {
+      amtEl.addEventListener('input', refreshQuiet);
+      amtEl.addEventListener('blur', function() {
+        var v = getAmt();
+        if (v > 0) amtEl.value = v.toFixed(2).replace('.', ',');
+        refresh(); // refresh mit ensureEmptyCustomRow erst beim blur
+      });
+    }
+    if (descEl) descEl.addEventListener('blur', function() {
+      refresh(); // neue Zeile auch wenn man Beschreibung verlässt
+    });
+  })(tr, id);
+
+  return tr;
+}
+
+function ensureEmptyCustomRow(filledRow) {
+  // Check if the next sibling custom-row is empty; if not, add one
+  var next = filledRow.nextSibling;
+  while (next && next.nodeType !== 1) next = next.nextSibling;
+  if (!next || next.className.indexOf('custom-row') === -1) {
+    // No custom row after this one – insert one
+    createCustomRow(null, filledRow);
+  } else {
+    // Next is a custom row – check if it's filled (then also ensure one more)
+    var cid = next.getAttribute('data-cid');
+    var filled = false;
+    for (var k = 0; k < customRows.length; k++) {
+      if (customRows[k].id === cid && customRows[k].filled) { filled = true; break; }
+    }
+    if (filled) createCustomRow(null, next);
+  }
+}
+
+function renderTable() {
+  var tbody = document.getElementById('posBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  customRows = [];
+  var groupIndex = 0;
+  var lastGroupTr = null;
+
+  for (var i = 0; i < positions.length; i++) {
+    var p = positions[i];
+
+    if (p.group) {
+      var trG = document.createElement('tr');
+      trG.className = 'group-head';
+      var tdG = document.createElement('td');
+      tdG.setAttribute('colspan', '5');
+      tdG.textContent = p.group;
+
+      if (groupIndex > 0) {
+        var btn = document.createElement('button');
+        btn.className = 'break-toggle';
+        btn.textContent = '\u23ce Neue Seite';
+        (function(row, b) {
+          b.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (row.className.indexOf('page-break-before-print') === -1) {
+              row.className += ' page-break-before-print';
+              b.className += ' active';
+            } else {
+              row.className = row.className.replace(' page-break-before-print', '');
+              b.className = b.className.replace(' active', '');
+            }
+          });
+        })(trG, btn);
+        tdG.appendChild(btn);
+      }
+
+      trG.appendChild(tdG);
+      tbody.appendChild(trG);
+      lastGroupTr = trG;
+      groupIndex++;
+      continue;
+    }
+
+    // Normale Position
+    var trP = document.createElement('tr');
+    trP.setAttribute('data-idx', String(i));
+    if (checkedSet[i]) { trP.className = 'checked'; }
+    trP.innerHTML = [
+      '<td class="check-col"><div class="cb-box">',
+      '<svg width="10" height="8" viewBox="0 0 10 8" fill="none">',
+      '<path d="M1 4L3.8 7L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+      '</svg></div></td>',
+      '<td class="pos-num">', p.pos, '</td>',
+      '<td class="desc">', p.desc, '</td>',
+      '<td class="factor">', (p.faktor || '-'), '</td>',
+      '<td class="amount">', fmt(p.computed), '</td>'
+    ].join('');
+
+    (function(row, idx) {
+      row.addEventListener('click', function() {
+        if (checkedSet[idx]) {
+          delete checkedSet[idx];
+          row.className = '';
+        } else {
+          checkedSet[idx] = true;
+          row.className = 'checked';
+        }
+        updateSum();
+      });
+    })(trP, i);
+
+    tbody.appendChild(trP);
+  }
+
+  // Eine initiale Freifelder-Zeile am Ende der Tabelle
+  createCustomRow(tbody, null);
+}
+
+function updateSum() {
+  var total = 0;
+  var count = 0;
+  for (var idx in checkedSet) {
+    if (checkedSet[idx]) {
+      var p = positions[parseInt(idx)];
+      if (p && !p.group) {
+        total += p.computed;
+        count++;
+      }
+    }
+  }
+  for (var k = 0; k < customRows.length; k++) {
+    if (customRows[k].filled) {
+      total += customRows[k].amount;
+      count++;
+    }
+  }
+  document.getElementById('sumValue').textContent = fmt(total);
+  var label = count === 0 ? '0 Positionen' : count === 1 ? '1 Position' : count + ' Positionen';
+  document.getElementById('sumCount').textContent = label;
+}
+
+function resetAll() {
+  checkedSet = {};
+  var rows = document.querySelectorAll('tr.checked');
+  for (var i = 0; i < rows.length; i++) rows[i].className = '';
+  var breakRows = document.querySelectorAll('tr.group-head');
+  for (var j = 0; j < breakRows.length; j++) {
+    breakRows[j].className = 'group-head';
+    var bb = breakRows[j].querySelector('.break-toggle');
+    if (bb) bb.className = 'break-toggle';
+  }
+  // Custom rows neu aufbauen
+  renderTable();
+  updateSum();
+  clearSig();
+  var nameInput = document.querySelector('input[placeholder="Name, Vorname"]');
+  var diagInput = document.querySelector('input[placeholder="z. B. J06.9"]');
+  var dateInput = document.getElementById('dateField');
+  var p2 = document.getElementById('p2');
+  var ibanDisplay = document.getElementById('ibanDisplay');
+  var ibanBtn = document.getElementById('ibanBtn');
+  if (nameInput) nameInput.value = '';
+  if (diagInput) diagInput.value = '';
+  if (dateInput) dateInput.value = '';
+  if (p2) p2.checked = true;
+  var resetNow = new Date();
+  document.getElementById('sigDate').textContent = resetNow.toLocaleDateString('de-DE');
+  if (dateInput) dateInput.placeholder = resetNow.toLocaleDateString('de-DE') + ' ' +
+    resetNow.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+
+
+
+// ── AUTO DATE ──
+var now = new Date();
+var dateField = document.getElementById('dateField');
+if (dateField) {
+  dateField.placeholder = now.toLocaleDateString('de-DE') + ' ' +
+    now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+var sigDateEl = document.getElementById('sigDate');
+if (sigDateEl) sigDateEl.textContent = now.toLocaleDateString('de-DE');
+
+// ── RECHNUNGSNUMMER ──
+var currentRechnr = 0;
+
+function formatRechnr(year, counter) {
+  var s = String(counter);
+  while (s.length < 4) s = '0' + s;
+  return year + '-' + s;
+}
+
+function initRechnr() {
+  var year = new Date().getFullYear();
+  var key = 'goae_rechnr_' + year;
+  try { currentRechnr = parseInt(localStorage.getItem(key) || '0'); } catch(e) { currentRechnr = 0; }
+  var nr = currentRechnr === 0 ? '\u2014' : formatRechnr(year, currentRechnr);
+  document.getElementById('rechnrField').textContent = nr;
+  document.getElementById('rechnrDisplay').textContent = nr;
+}
+
+function toggleIbanRow(show) {
+  var row = document.getElementById('ibanRow');
+  if (row) row.style.display = show ? 'block' : 'none';
+}
+
+try { initRechnr(); } catch(e) {}
+try { renderTable(); } catch(e) { console.error('renderTable:', e); }
+try { updateSum(); } catch(e) {}
+try { loadSettings(); } catch(e) {}
+try { restoreFormState(); } catch(e) {}
+
+// ── SIGNATURE PAD (Retina-aware) ──
+(function() {
+  var canvas = document.getElementById('sigCanvas');
+  if (!canvas) return;
+
+  // Retina/HiDPI: interne Auflösung hochskalieren
+  var dpr = window.devicePixelRatio || 1;
+  var cssW = canvas.offsetWidth || 600;
+  var cssH = 80; // CSS height
+  canvas.width  = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  canvas.style.width  = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var drawing = false, lx = 0, ly = 0;
+
+  var getPos = function(e) {
+    var r = canvas.getBoundingClientRect();
+    var src = (e.touches && e.touches.length > 0) ? e.touches[0] : e;
+    return [src.clientX - r.left, src.clientY - r.top];
+  };
+  var start = function(e) {
+    e.preventDefault();
+    drawing = true;
+    canvas.setAttribute('data-signed', 'true');
+    var p = getPos(e);
+    lx = p[0]; ly = p[1];
+    ctx.beginPath();
+    ctx.arc(lx, ly, 0.8, 0, Math.PI * 2);
+    ctx.fillStyle = '#0f2d52';
+    ctx.fill();
+  };
+  var move = function(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    var p = getPos(e);
+    var x = p[0], y = p[1];
+    ctx.beginPath();
+    ctx.moveTo(lx, ly);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = '#0f2d52';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    lx = x; ly = y;
+  };
+  var stop = function() { drawing = false; };
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', stop);
+  canvas.addEventListener('mouseleave', stop);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', stop);
+})();
+
+// ── SETTINGS ──
+function loadSettings() {
+  var s = {};
+  try {
+    s.name = localStorage.getItem('doc_name') || 'Dr. med. Julius Hoffmann';
+    s.fach = localStorage.getItem('doc_fach') || 'Facharzt für Allgemeinmedizin';
+    s.bsnr = localStorage.getItem('doc_bsnr') || '727635000';
+    s.iban = localStorage.getItem('doc_iban') || 'DE 70 3006 0601 0045 9521 63';
+  } catch(e) {}
+  var el;
+  el = document.getElementById('doctorName'); if (el) el.textContent = s.name;
+  el = document.getElementById('doctorFach'); if (el) el.textContent = s.fach;
+  el = document.getElementById('doctorBsnr'); if (el) el.textContent = 'BSNR ' + s.bsnr;
+  el = document.getElementById('ibanDisplay');
+  if (el) {
+    var fmt = s.iban.replace(/[^a-zA-Z0-9]/g,'').replace(/(.{4})/g,'$1 ').trim();
+    el.textContent = fmt;
+  }
+  return s;
+}
+
+function openSettings() {
+  var s = loadSettings();
+  var el;
+  el = document.getElementById('setName'); if (el) el.value = localStorage.getItem('doc_name') || '';
+  el = document.getElementById('setFach'); if (el) el.value = localStorage.getItem('doc_fach') || '';
+  el = document.getElementById('setBsnr'); if (el) el.value = localStorage.getItem('doc_bsnr') || '';
+  el = document.getElementById('setIban'); if (el) el.value = localStorage.getItem('doc_iban') || '';
+  document.getElementById('settingsModal').style.display = 'flex';
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').style.display = 'none';
+}
+
+function saveSettings() {
+  try {
+    var n = document.getElementById('setName').value.trim();
+    var f = document.getElementById('setFach').value.trim();
+    var b = document.getElementById('setBsnr').value.trim();
+    var i = document.getElementById('setIban').value.trim();
+    if (n) localStorage.setItem('doc_name', n);
+    if (f) localStorage.setItem('doc_fach', f);
+    if (b) localStorage.setItem('doc_bsnr', b);
+    if (i) localStorage.setItem('doc_iban', i);
+  } catch(e) {}
+  loadSettings();
+  closeSettings();
+  showToast('Einstellungen gespeichert ✓');
+}
+
+// ── TOAST NOTIFICATION ──
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#0f2d52;color:#fff;padding:10px 20px;border-radius:3px;font-size:12px;font-weight:600;font-family:"IBM Plex Sans",sans-serif;z-index:9999;opacity:0;transition:opacity 0.25s,transform 0.25s;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2500);
+}
+
+function clearSig() {
+  var c = document.getElementById('sigCanvas');
+  if (c) {
+    c.getContext('2d').clearRect(0, 0, c.width, c.height);
+    c.removeAttribute('data-signed');
+  }
+}
+
+
+// ── PDF EXPORT ──
+function exportPDF() {
+  var year = new Date().getFullYear();
+  var nextNr = currentRechnr + 1;
+  document.getElementById('modalNrInput').value = formatRechnr(year, nextNr);
+  window._exportingPDF = true;
+  document.getElementById('rechnrModal').style.display = 'flex';
+}
+
+function buildPDF(rechnrStr) {
+  var jsPDF = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+  if (!jsPDF) { alert('PDF-Library nicht geladen. Bitte online öffnen.'); return; }
+
+  var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var W = 210, ml = 15, mr = 15, cw = W - ml - mr;
+  var y = 0;
+  var navy = [15, 45, 82];
+  var navyLight = [232, 238, 247];
+  var muted = [107, 114, 128];
+  var lineC = [209, 217, 230];
+
+  // Header
+  doc.setFillColor(navy[0], navy[1], navy[2]);
+  doc.rect(0, 0, W, 22, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(16); doc.setFont('helvetica','bold');
+  doc.text('Liquidation', ml, 10);
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text('\u00c4rztlicher Bereitschaftsdienst \u00b7 KV Berlin', ml, 15);
+  doc.setFontSize(7);
+  doc.text('GO\u00c4 1996', W - mr - 18, 10);
+  doc.text('Rech.-Nr. ' + rechnrStr, W - mr, 15, { align: 'right' });
+  y = 22;
+
+  // Rechnungsnummer-Zeile
+  doc.setFillColor(navyLight[0], navyLight[1], navyLight[2]);
+  doc.rect(0, y, W, 9, 'F');
+  doc.setTextColor(navy[0], navy[1], navy[2]);
+  doc.setFontSize(7); doc.setFont('helvetica','bold');
+  doc.text('RECHNUNGS-NR.', ml, y + 4);
+  doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text(rechnrStr, ml + 28, y + 6);
+  y += 9;
+
+  // Patientendaten
+  doc.setFillColor(255,255,255);
+  doc.rect(0, y, W, 18, 'F');
+  var patName = document.querySelector('input[placeholder="Name, Vorname"]');
+  var patDiag = document.querySelector('input[placeholder="z. B. J06.9"]');
+  var patDate = document.getElementById('dateField');
+  var nameVal = (patName && patName.value) ? patName.value : '\u2014';
+  var diagVal = (patDiag && patDiag.value) ? patDiag.value : '\u2014';
+  var dateVal = (patDate && patDate.value) ? patDate.value : (patDate ? patDate.placeholder : '\u2014');
+  doc.setTextColor(muted[0], muted[1], muted[2]);
+  doc.setFontSize(6); doc.setFont('helvetica','bold');
+  doc.text('PATIENT/IN', ml, y + 5);
+  doc.text('DIAGNOSE (ICD)', ml + 70, y + 5);
+  doc.text('DATUM / UHRZEIT', ml + 130, y + 5);
+  doc.setTextColor(30,30,46);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(nameVal, ml, y + 12);
+  doc.text(diagVal, ml + 70, y + 12);
+  doc.setFontSize(9);
+  doc.text(dateVal, ml + 130, y + 12);
+  doc.setDrawColor(lineC[0],lineC[1],lineC[2]);
+  doc.line(0, y + 18, W, y + 18);
+  y += 18;
+
+  // Positionen aus DOM lesen
+  var tableBody = [];
+  var prevGroup = null;
+  var tbody = document.getElementById('posBody');
+  var rows = tbody ? Array.prototype.slice.call(tbody.querySelectorAll('tr')) : [];
+
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var cls = row.className || '';
+
+    if (cls.indexOf('group-head') !== -1) {
+      var td0 = row.querySelector('td');
+      prevGroup = td0 ? td0.textContent.replace('\u23ce Neue Seite','').trim() : '';
+      continue;
+    }
+    var isChecked = cls.indexOf('checked') !== -1;
+    var isCustom  = cls.indexOf('has-value') !== -1 && cls.indexOf('custom-row') !== -1;
+    if (!isChecked && !isCustom) continue;
+
+    if (isCustom) {
+      var cid = row.getAttribute('data-cid');
+      if (!cid) continue;
+      var cPos  = document.getElementById('pos_'  + cid);
+      var cDesc = document.getElementById('desc_' + cid);
+      var cFak  = document.getElementById('fak_'  + cid);
+      var cAmt  = document.getElementById('amt_'  + cid);
+      var amtRaw = cAmt ? cAmt.value.replace(/\s*EUR/,'').replace(/\s*\u20ac/,'').replace(',','.').trim() : '0';
+      var amtVal = parseFloat(amtRaw) || 0;
+      if (prevGroup && prevGroup !== tableBody._lastGroup) {
+        tableBody.push([{ content: prevGroup, colSpan: 4, styles: { fillColor: navyLight, textColor: navy, fontStyle: 'bold', fontSize: 7, cellPadding: {top:3,bottom:3,left:4,right:4} } }]);
+        tableBody._lastGroup = prevGroup;
+      }
+      tableBody.push([
+        cPos  ? cPos.value  : '',
+        cDesc ? cDesc.value : '',
+        cFak  ? cFak.options[cFak.selectedIndex].text : '',
+        amtVal.toFixed(2).replace('.',',') + ' \u20ac'
+      ]);
+    } else {
+      var tds = row.querySelectorAll('td');
+      var grp = prevGroup || '';
+      if (grp && grp !== tableBody._lastGroup) {
+        tableBody.push([{ content: grp, colSpan: 4, styles: { fillColor: navyLight, textColor: navy, fontStyle: 'bold', fontSize: 7, cellPadding: {top:3,bottom:3,left:4,right:4} } }]);
+        tableBody._lastGroup = grp;
+      }
+      tableBody.push([
+        tds[1] ? tds[1].textContent.trim() : '',
+        tds[2] ? tds[2].textContent.trim() : '',
+        tds[3] ? tds[3].textContent.trim() : '',
+        tds[4] ? tds[4].textContent.trim() : ''
+      ]);
+    }
+  }
+
+  doc.autoTable({
+    startY: y,
+    head: [['Nr.','Leistung','Faktor','Betrag']],
+    body: tableBody,
+    theme: 'grid',
+    headStyles: { fillColor: navy, textColor: [255,255,255], fontSize: 8, fontStyle: 'bold', cellPadding: 3 },
+    bodyStyles: { fontSize: 9, cellPadding: {top:3,bottom:3,left:3,right:3} },
+    columnStyles: {
+      0: { cellWidth: 14, halign: 'center', fontStyle: 'bold', textColor: navy },
+      1: { cellWidth: 'auto' },
+      2: { cellWidth: 24, halign: 'right', textColor: [100,100,120] },
+      3: { cellWidth: 26, halign: 'right', fontStyle: 'bold' }
+    },
+    alternateRowStyles: { fillColor: [240,245,255] },
+    margin: { left: ml, right: mr }
+  });
+  y = doc.lastAutoTable.finalY;
+
+  // Gesamtbetrag
+  doc.setFillColor(navy[0], navy[1], navy[2]);
+  doc.rect(0, y, W, 12, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text('Gesamtbetrag', ml, y + 5);
+  var sumEl = document.getElementById('sumValue');
+  doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text(sumEl ? sumEl.textContent : '0,00 \u20ac', W - mr, y + 8, { align: 'right' });
+  y += 12;
+
+  // Zahlungsart
+  doc.setFillColor(255,255,255);
+  doc.rect(0, y, W, 16, 'F');
+  doc.setDrawColor(lineC[0],lineC[1],lineC[2]);
+  doc.line(0, y + 16, W, y + 16);
+  doc.setTextColor(muted[0],muted[1],muted[2]);
+  doc.setFontSize(6); doc.setFont('helvetica','bold');
+  doc.text('ZAHLUNGSART', ml, y + 5);
+  var p1el = document.getElementById('p1');
+  var ibanEl = document.getElementById('ibanDisplay');
+  var ibanTxt = ibanEl ? ibanEl.textContent.replace(/\u00a0/g,' ').trim() : '';
+  var payText = 'Bitte \u00dcberweisung innerhalb 14 Tagen auf IBAN: ' + ibanTxt;
+  if (p1el && p1el.checked) payText = 'Betrag erhalten (Bar oder Direkt\u00fcberweisung)';
+  doc.setTextColor(30,30,46);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text(payText, ml, y + 12, { maxWidth: cw });
+  y += 16;
+
+  // Arzt + Unterschrift
+  if (y + 40 > 280) { doc.addPage(); y = 15; }
+  var blockH = 38;
+  doc.setFillColor(255,255,255);
+  doc.rect(0, y, W, blockH, 'F');
+  doc.setDrawColor(navy[0],navy[1],navy[2]);
+  doc.setLineWidth(0.8);
+  doc.line(ml, y + 5, ml, y + blockH - 5);
+  doc.setLineWidth(0.3);
+  var docNameEl = document.getElementById('doctorName');
+  var docFachEl = document.getElementById('doctorFach');
+  var docBsnrEl = document.getElementById('doctorBsnr');
+  var docNameTxt = docNameEl ? docNameEl.textContent : 'Dr. med. Julius Hoffmann';
+  var docFachTxt = docFachEl ? docFachEl.textContent : 'Facharzt f\u00fcr Allgemeinmedizin';
+  var docBsnrTxt = docBsnrEl ? docBsnrEl.textContent : 'BSNR 727635000';
+  doc.setTextColor(muted[0],muted[1],muted[2]);
+  doc.setFontSize(6); doc.setFont('helvetica','bold');
+  doc.text('BEHANDELNDER ARZT', ml + 4, y + 7);
+  doc.setTextColor(navy[0],navy[1],navy[2]);
+  doc.setFontSize(11); doc.setFont('helvetica','bold');
+  doc.text(docNameTxt, ml + 4, y + 14);
+  doc.setTextColor(muted[0],muted[1],muted[2]);
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text(docFachTxt, ml + 4, y + 20);
+  doc.text(docBsnrTxt, ml + 4, y + 26);
+  var sigX = W / 2 + 5;
+  doc.setTextColor(muted[0],muted[1],muted[2]);
+  doc.setFontSize(6); doc.setFont('helvetica','bold');
+  doc.text('DATUM', sigX, y + 7);
+  var sdEl = document.getElementById('sigDate');
+  doc.setTextColor(navy[0],navy[1],navy[2]);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text(sdEl ? sdEl.textContent : '', sigX, y + 13);
+  doc.setTextColor(muted[0],muted[1],muted[2]);
+  doc.setFontSize(6); doc.setFont('helvetica','bold');
+  doc.text('UNTERSCHRIFT', sigX, y + 19);
+  var sigC = document.getElementById('sigCanvas');
+  if (sigC) { try { doc.addImage(sigC.toDataURL('image/png'), 'PNG', sigX, y + 20, (W-mr)-sigX, 14); } catch(e){} }
+  doc.setDrawColor(lineC[0],lineC[1],lineC[2]);
+  doc.line(sigX, y + 35, W - mr, y + 35);
+  y += blockH;
+
+  // Hinweis
+  if (y + 14 > 285) { doc.addPage(); y = 15; }
+  doc.setTextColor(muted[0],muted[1],muted[2]);
+  doc.setFontSize(7); doc.setFont('helvetica','normal');
+  doc.text('* Zuschl\u00e4ge E,F,G,H,K2 nur in Verbindung mit Pos. 50\u201352, einfacher Satz. FKP ersetzt Wegegeld nach \u00a78 GO\u00c4.', ml, y + 6, { maxWidth: cw });
+  doc.text('* \u00c4rztliche Leistungen sind gem\u00e4\u00df \u00a74 Nr.14 Buchst.a UStG umsatzsteuerbefreit.', ml, y + 11, { maxWidth: cw });
+
+  var patInput = document.querySelector('input[placeholder="Name, Vorname"]');
+  var patName = patInput && patInput.value.trim() ? patInput.value.trim().replace(/[^a-zA-Z0-9äöüÄÖÜß\-_. ]/g, '').replace(/\s+/g, '_') : '';
+  var fn = 'Liquidation' + (patName ? '_' + patName : '') + (rechnrStr ? '_' + rechnrStr : '') + '.pdf';
+  doc.save(fn);
+  showToast('PDF gespeichert ✓');
+}
+
+// ── SMART PRINT ──
+function smartPrint() {
+  var year = new Date().getFullYear();
+  var nextNr = currentRechnr + 1;
+  var nrFormatted = formatRechnr(year, nextNr);
+  document.getElementById('modalNrInput').value = nrFormatted;
+  var modal = document.getElementById('rechnrModal');
+  modal.style.display = 'flex';
+  setTimeout(function() {
+    var inp = document.getElementById('modalNrInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function cancelPrint() {
+  document.getElementById('rechnrModal').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var modal = document.getElementById('rechnrModal');
+    if (modal && modal.style.display === 'flex') cancelPrint();
+  }
+});
+
+// ── BEFORE/AFTER PRINT: leere Gruppenköpfe ausblenden ──
+// beforeprint feuert garantiert VOR dem Print-Rendering (auch iOS Safari)
+window.addEventListener('beforeprint', function() {
+  var tbody = document.getElementById('posBody');
+  if (!tbody) return;
+  var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+  rows.forEach(function(tr) {
+    if (!tr.classList.contains('group-head')) return;
+    var hasChecked = false;
+    var next = tr.nextElementSibling;
+    while (next) {
+      if (next.classList.contains('group-head')) break;
+      if (next.classList.contains('checked') || next.classList.contains('has-value')) {
+        hasChecked = true; break;
+      }
+      next = next.nextElementSibling;
+    }
+    if (!hasChecked) tr.classList.add('print-hide');
+  });
+});
+
+// afterprint: Klassen wieder entfernen
+window.addEventListener('afterprint', function() {
+  var rows = document.querySelectorAll('tr.print-hide');
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].classList.remove('print-hide');
+  }
+});
+
+function saveFormState() {
+  try {
+    var nameEl = document.querySelector('input[placeholder="Name, Vorname"]');
+    var diagEl = document.querySelector('input[placeholder="z. B. J06.9"]');
+    var dateEl = document.getElementById('dateField');
+    var p1 = document.getElementById('p1');
+    var p2 = document.getElementById('p2');
+    var state = {
+      name:  nameEl ? nameEl.value : '',
+      diag:  diagEl ? diagEl.value : '',
+      date:  dateEl ? dateEl.value : '',
+      pay:   p1 && p1.checked ? 'p1' : 'p2',
+      checked: Object.keys(checkedSet),
+      custom: customRows.filter(function(r){ return r.filled; }).map(function(r){
+        return {
+          pos:    document.getElementById('pos_'  + r.id) ? document.getElementById('pos_'  + r.id).value  : '',
+          desc:   document.getElementById('desc_' + r.id) ? document.getElementById('desc_' + r.id).value : '',
+          faktor: document.getElementById('fak_'  + r.id) ? document.getElementById('fak_'  + r.id).selectedIndex : 1,
+          amount: document.getElementById('amt_'  + r.id) ? document.getElementById('amt_'  + r.id).value : ''
+        };
+      })
+    };
+    sessionStorage.setItem('goae_form_state', JSON.stringify(state));
+  } catch(e) {}
+}
+
+function restoreFormState() {
+  try {
+    var raw = sessionStorage.getItem('goae_form_state');
+    if (!raw) return;
+    var state = JSON.parse(raw);
+    var nameEl = document.querySelector('input[placeholder="Name, Vorname"]');
+    var diagEl = document.querySelector('input[placeholder="z. B. J06.9"]');
+    var dateEl = document.getElementById('dateField');
+    if (nameEl && state.name) nameEl.value = state.name;
+    if (diagEl && state.diag) diagEl.value = state.diag;
+    if (dateEl && state.date) dateEl.value = state.date;
+    var payEl = document.getElementById(state.pay || 'p2');
+    if (payEl) payEl.checked = true;
+    // Positionen wiederherstellen
+    if (state.checked) {
+      state.checked.forEach(function(idx) {
+        var tr = document.querySelector('tr[data-idx="' + idx + '"]');
+        if (tr) { tr.className = 'checked'; checkedSet[parseInt(idx)] = true; }
+      });
+    }
+    // Custom rows wiederherstellen
+    if (state.custom && state.custom.length > 0) {
+      var tbody = document.getElementById('posBody');
+      // Bestehende leere custom row holen
+      var existingEmpty = document.querySelector('tr.custom-row:not(.has-value)');
+      state.custom.forEach(function(c, i) {
+        var targetRow = i === 0 && existingEmpty ? existingEmpty : null;
+        if (!targetRow) {
+          var lastFilled = document.querySelector('tr.custom-row.has-value:last-of-type');
+          targetRow = createCustomRow(tbody, lastFilled);
+        }
+        var cid = targetRow.getAttribute('data-cid');
+        var posEl  = document.getElementById('pos_'  + cid);
+        var descEl = document.getElementById('desc_' + cid);
+        var fakEl  = document.getElementById('fak_'  + cid);
+        var amtEl  = document.getElementById('amt_'  + cid);
+        if (posEl)  posEl.value = c.pos || '';
+        if (descEl) descEl.value = c.desc || '';
+        if (fakEl)  fakEl.selectedIndex = c.faktor || 1;
+        if (amtEl)  amtEl.value = c.amount || '';
+        // Trigger refresh
+        if (amtEl) amtEl.dispatchEvent(new Event('blur'));
+      });
+    }
+    updateSum();
+    sessionStorage.removeItem('goae_form_state');
+  } catch(e) {}
+}
+
+function confirmPrint() {
+  var year = new Date().getFullYear();
+  var key = 'goae_rechnr_' + year;
+  var inputVal = document.getElementById('modalNrInput').value.trim();
+  var match = inputVal.match(/\d{4}-(\d+)$/);
+  if (match) {
+    currentRechnr = parseInt(match[1]);
+  } else {
+    currentRechnr = currentRechnr + 1;
+  }
+  try { localStorage.setItem(key, currentRechnr); } catch(e) {}
+  document.getElementById('rechnrField').textContent = inputVal;
+  document.getElementById('rechnrDisplay').textContent = inputVal;
+  document.getElementById('rechnrModal').style.display = 'none';
+
+  if (window._exportingPDF) {
+    window._exportingPDF = false;
+    buildPDF(inputVal);
+  } else {
+    saveFormState();
+    window.print();
+  }
+}
+
+// ── PWA / INSTALL BANNER ──
+var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var isStandalone = window.navigator.standalone === true;
+var dismissed = (function() { try { return sessionStorage.getItem('bannerDismissed'); } catch(e) { return null; } })();
+if (isIOS && !isStandalone && !dismissed) {
+  document.getElementById('installBanner').style.display = 'flex';
+}
+
+var deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  var banner = document.getElementById('installBanner');
+  var btn = document.getElementById('installBtn');
+  document.getElementById('installText').innerHTML = '<strong>Als App installieren</strong> \u2013 offline auf dem Homescreen nutzen.';
+  btn.style.display = 'block';
+  banner.style.display = 'flex';
+  btn.addEventListener('click', function() {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') banner.style.display = 'none';
+      deferredPrompt = null;
+    });
+  });
+});
+
+function dismissBanner() {
+  document.getElementById('installBanner').style.display = 'none';
+  try { sessionStorage.setItem('bannerDismissed', '1'); } catch(e) {}
+}
+
+// ── SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  var swCode = [
+    'var CACHE="goae-v1";',
+    'self.addEventListener("install",function(e){',
+    '  e.waitUntil(caches.open(CACHE).then(function(c){',
+    '    return c.addAll(["https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"]).catch(function(){});',
+    '  }));self.skipWaiting();',
+    '});',
+    'self.addEventListener("activate",function(e){',
+    '  e.waitUntil(caches.keys().then(function(keys){',
+    '    return Promise.all(keys.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));',
+    '  }));self.clients.claim();',
+    '});',
+    'self.addEventListener("fetch",function(e){',
+    '  e.respondWith(caches.match(e.request).then(function(cached){return cached||fetch(e.request).catch(function(){return cached;});}));',
+    '});'
+  ].join('\n');
+  try {
+    var blob = new Blob([swCode], { type: 'application/javascript' });
+    var swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(function() {});
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
